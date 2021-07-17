@@ -1,5 +1,4 @@
 class UnigramModel:
-
     __dict: dict[str: int]
 
     def __init__(self):
@@ -7,13 +6,18 @@ class UnigramModel:
         self.__size = 0
 
     def __getitem__(self, item):
-        return self.__dict.get(item, 0)
+        if item not in self.__dict:
+            self.__dict[item] = 0
+        return self.__dict[item]
 
     def __setitem__(self, key, value):
         self.__size += value
         if key in self.__dict:
-             self.__size -= self.__dict[key]
+            self.__size -= self.__dict[key]
         self.__dict[key] = value
+
+    def __len__(self):
+        return self.__size
 
     def remove_word(self, item):
         self.__size -= len(self.__dict[item])
@@ -25,7 +29,6 @@ class UnigramModel:
 
 
 class BigramModel:
-
     __dict: dict[str: UnigramModel]
 
     def __init__(self):
@@ -33,7 +36,21 @@ class BigramModel:
         self.__size = 0
 
     def __getitem__(self, item):
-        return self.__dict.get(item, UnigramModel())
+        if item not in self.__dict:
+            self.__dict[item] = UnigramModel()
+        return self.__dict[item]
 
     def __setitem__(self, key, value):
+        print('Set item called in bigram')
+        self.__size += len(value)
+        if key in self.__dict:
+            self.__size -= len(self.__dict[key])
         self.__dict[key] = value
+
+    def __len__(self):
+        return sum([len(self.__dict[i]) for i in self.__dict])
+
+
+b = BigramModel()
+b['2']['1'] += 5
+print(len(b))
