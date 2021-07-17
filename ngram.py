@@ -25,6 +25,9 @@ class UnigramModel:
     def __repr__(self):
         return str(self)
 
+    def __contains__(self, item):
+        return item in self.__dict
+
     def remove_word(self, item):
         self.__size -= len(self.__dict[item])
         del self.__dict[item]
@@ -42,9 +45,10 @@ class UnigramModel:
 class BigramModel:
     __dict: dict[str: dict[str: int]]
 
-    def __init__(self):
+    def __init__(self, unigrams):
         self.__dict = {}
         self.__size = 0
+        self.__unigrams = unigrams
 
     def __getitem__(self, item: tuple):
         if item[0] not in self.__dict:
@@ -70,7 +74,8 @@ class BigramModel:
     def __repr__(self):
         return str(self)
 
+    def word2_if_word1(self, word1, word2):
+        if word1 not in self.__unigrams:
+            return 0.0
+        return self[word1, word2] / self.__unigrams[word1]
 
-b = BigramModel()
-b['2', '1'] += 5
-print(len(b), b)
