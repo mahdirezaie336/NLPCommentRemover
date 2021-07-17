@@ -1,13 +1,6 @@
 import re
 from constants import Consts
-
-
-neg = {}
-pos = {}
-neg_bi = {}
-pos_bi = {}
-num_of_pos = 0
-num_of_neg = 0
+from ngram import *
 
 
 def pre_process_filter(line: str) -> list[str]:
@@ -16,48 +9,41 @@ def pre_process_filter(line: str) -> list[str]:
             yield word
 
 
-def cleanse_bigram(bigram: dict):
-
-
-def read_training_datasets():
+def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, BigramModel):
+    neg = UnigramModel()
+    neg_bi = BigramModel(neg)
     # Reading Negative Dataset
     with open(Consts.NEGATIVE_DATASET, 'r') as file:
         for line in file:
             prev_word = ''
             for word in pre_process_filter(line):
-                neg[word] = neg.get(word, 0) + 1
-                if word not in neg_bi:
-                    neg_bi[word] = {}
-                neg_bi[word][prev_word] = neg_bi[word].get(prev_word, 0) + 1
+                neg[word] += 1
+                neg_bi[word, prev_word] += 1
                 prev_word = word
 
+    pos = UnigramModel()
+    pos_bi = BigramModel(neg)
     # Reading Positive Dataset
     with open(Consts.POSITIVE_DATASET, 'r') as file:
         for line in file:
             prev_word = ''
             for word in pre_process_filter(line):
-                pos[word] = pos.get(word, 0) + 1
-                if word not in pos_bi:
-                    pos_bi[word] = {}
-                pos_bi[word][prev_word] = pos_bi[word].get(prev_word, 0) + 1
+                pos[word] += 1
+                pos_bi[word, prev_word] += 1
                 prev_word = word
 
     # Removing very low or very high frequent words
-    cleanse_unigram(neg)
-    cleanse_unigram(pos)
-    cleanse_bigram(neg_bi)
-    cleanse_bigram(pos_bi)
+    pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    neg.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    pos_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    neg_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
 
-    # Counting number of negative and positive words
-    global num_of_neg, num_of_pos
-    num_of_neg = count_unigram(neg)
-    num_of_pos = count_unigram(pos)
+    return neg, neg_bi, pos, pos_bi
 
 
 def main():
-    read_training_datasets()
-    for i in neg_bi:
-        print(i, neg_bi[i])
+    neg, neg_bi, pos, pos_bi = read_training_datasets()
+    print(neg)
 
 
 if __name__ == '__main__':
