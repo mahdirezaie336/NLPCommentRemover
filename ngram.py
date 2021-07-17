@@ -19,6 +19,12 @@ class UnigramModel:
     def __len__(self):
         return self.__size
 
+    def __str__(self):
+        return str(self.__dict)
+
+    def __repr__(self):
+        return str(self)
+
     def remove_word(self, item):
         self.__size -= len(self.__dict[item])
         del self.__dict[item]
@@ -49,6 +55,12 @@ class BigramModel:
 
     def __len__(self):
         return sum([len(self.__dict[i]) for i in self.__dict])
+
+    def __str__(self):
+        return str(self.__dict)
+
+    def __repr__(self):
+        return str(self)
 
 
 b = BigramModel()
