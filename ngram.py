@@ -33,28 +33,36 @@ class UnigramModel:
         self[item] += 1
         self.__size += 1
 
+    def get_probability_of(self, word):
+        if self.__size == 0:
+            return 0.0
+        return self.__dict.get(word, 0) / self.__size
+
 
 class BigramModel:
-    __dict: dict[str: UnigramModel]
+    __dict: dict[str: dict[str: int]]
 
     def __init__(self):
         self.__dict = {}
         self.__size = 0
 
-    def __getitem__(self, item):
-        if item not in self.__dict:
-            self.__dict[item] = UnigramModel()
-        return self.__dict[item]
+    def __getitem__(self, item: tuple):
+        if item[0] not in self.__dict:
+            self.__dict[item[0]] = {}
+        if item[1] not in self.__dict[item[0]]:
+            self.__dict[item[0]][item[1]] = 0
+        return self.__dict[item[0]][item[1]]
 
-    def __setitem__(self, key, value):
-        print('Set item called in bigram')
-        self.__size += len(value)
-        if key in self.__dict:
-            self.__size -= len(self.__dict[key])
-        self.__dict[key] = value
+    def __setitem__(self, key: tuple, value):
+        self.__size += value
+        if key[0] not in self.__dict:
+            self.__dict[key[0]] = {}
+        elif key[1] in self.__dict[key[0]]:
+            self.__size -= self.__dict[key[0]][key[1]]
+        self.__dict[key[0]][key[1]] = value
 
     def __len__(self):
-        return sum([len(self.__dict[i]) for i in self.__dict])
+        return self.__size
 
     def __str__(self):
         return str(self.__dict)
@@ -64,5 +72,5 @@ class BigramModel:
 
 
 b = BigramModel()
-b['2']['1'] += 5
-print(len(b))
+b['2', '1'] += 5
+print(len(b), b)
