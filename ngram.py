@@ -41,6 +41,26 @@ class UnigramModel:
             return 0.0
         return self.__dict.get(word, 0) / self.__size
 
+    def clean(self, min_number_of_repeats, top_n_maximums):
+        to_remove = []
+
+        # Remove words with number of repeats less than threshold
+        for word in self.__dict:
+            if self.__dict[word] <= min_number_of_repeats:
+                to_remove.append(word)
+        for i in to_remove:
+            del self.__dict[i]
+
+        # Remove top n repeated words
+        for i in range(top_n_maximums):
+            maximum = 0
+            max_word = ''
+            for word in self.__dict:
+                if self.__dict[word] > maximum:
+                    maximum = self.__dict[word]
+                    max_word = word
+            del self.__dict[max_word]
+
 
 class BigramModel:
     __dict: dict[str: dict[str: int]]
@@ -79,3 +99,28 @@ class BigramModel:
             return 0.0
         return self[word1, word2] / self.__unigrams[word1]
 
+    def clean(self, min_number_of_repeats, top_n_maximums):
+        to_remove = []
+
+        # Remove words with number of repeats less than threshold
+        for first_word in self.__dict:
+            for second_word in self.__dict[first_word]:
+                if self.__dict[first_word][second_word] <= min_number_of_repeats:
+                    to_remove.append((first_word, second_word))
+        for i in to_remove:
+            del self.__dict[i[0]][i[1]]
+            if len(self.__dict[i[0]]) == 0:
+                del self.__dict[i[0]]
+
+        # Remove top n repeated words
+        for i in range(top_n_maximums):
+            maximum = 0
+            max_word = ('', '')
+            for first_word in self.__dict:
+                for second_word in self.__dict[first_word]:
+                    if self.__dict[first_word][second_word] > maximum:
+                        maximum = self.__dict[first_word][second_word]
+                        max_word = (first_word, second_word)
+            del self.__dict[max_word[0]][max_word[1]]
+            if len(self.__dict[max_word[0]]) == 0:
+                del self.__dict[max_word[0]]
