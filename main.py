@@ -6,7 +6,7 @@ from ngram import *
 def pre_process_filter(line: str) -> list[str]:
     for word in re.split('[\W\s]', line):
         if word != '':
-            yield word
+            yield word.lower()
 
 
 def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, BigramModel):
@@ -43,7 +43,7 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
 
 def main():
     neg, neg_bi, pos, pos_bi = read_training_datasets()
-    print(neg)
+    print(neg, neg_bi)
 
 
 if __name__ == '__main__':

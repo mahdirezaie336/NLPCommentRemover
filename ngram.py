@@ -59,7 +59,8 @@ class UnigramModel:
                 if self.__dict[word] > maximum:
                     maximum = self.__dict[word]
                     max_word = word
-            del self.__dict[max_word]
+            if max_word != '':
+                del self.__dict[max_word]
 
 
 class BigramModel:
@@ -121,6 +122,7 @@ class BigramModel:
                     if self.__dict[first_word][second_word] > maximum:
                         maximum = self.__dict[first_word][second_word]
                         max_word = (first_word, second_word)
-            del self.__dict[max_word[0]][max_word[1]]
-            if len(self.__dict[max_word[0]]) == 0:
+            if max_word != ('', ''):
+                del self.__dict[max_word[0]][max_word[1]]
+            if len(self.__dict.get(max_word[0], '1')) == 0:
                 del self.__dict[max_word[0]]
