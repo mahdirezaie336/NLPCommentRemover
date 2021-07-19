@@ -51,8 +51,11 @@ def main():
         # Getting inputs loop
         while True:
             input_str = input('Enter an opinion: ')
+            if input_str == '!q':
+                break
             input_list = [i for i in pre_process_filter(input_str)]
 
+            # Getting probability
             use_logarithm = False
             if is_unigram:
                 negative_probability = neg.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
@@ -61,6 +64,7 @@ def main():
                 negative_probability = neg_bi.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
                 positive_probability = pos_bi.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
 
+            # Showing results
             print('negative probability: ', negative_probability)
             print('positive probability: ', positive_probability)
             if negative_probability > positive_probability:
@@ -70,6 +74,8 @@ def main():
 
     except KeyboardInterrupt:
         print('\nExiting due to a keyboard interrupt...', file=sys.stderr)
+    else:
+        print('\nExiting ...')
 
 
 if __name__ == '__main__':
