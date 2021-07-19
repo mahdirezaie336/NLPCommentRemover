@@ -1,7 +1,7 @@
 class Consts:
 
     NEGATIVE_DATASET = './my_neg'
-    POSITIVE_DATASET = './rt-polarity.pos'
+    POSITIVE_DATASET = './my_pos'
 
     LOWER_FREQUENCY_CUTOFF = 2
     UPPER_FREQUENCY_CUTOFF = 5

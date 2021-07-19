@@ -33,19 +33,18 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
                 prev_word = word
 
     # Removing very low or very high frequent words
-    pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
-    neg.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
-    pos_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
-    neg_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    # pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    # neg.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    # pos_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    # neg_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
 
     return neg, neg_bi, pos, pos_bi
 
 
 def main():
     neg, neg_bi, pos, pos_bi = read_training_datasets()
-    print(neg_bi)
-    print(neg_bi.get_unigrams())
-    print(neg_bi.word2_if_word1('not', 'working'))
+    print(neg_bi.get_probability_of_sentence(['is', 'working']))
+    print(pos_bi.get_probability_of_sentence(['is', 'working']))
 
 
 if __name__ == '__main__':
