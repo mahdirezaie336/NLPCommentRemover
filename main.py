@@ -1,6 +1,7 @@
 import re
 from constants import Consts
 from ngram import *
+import sys
 
 
 def pre_process_filter(line: str) -> list[str]:
@@ -29,7 +30,7 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
             prev_word = ''
             for word in pre_process_filter(line):
                 pos[word] += 1
-                pos_bi[word, prev_word] += 1
+                pos_bi[prev_word, word] += 1
                 prev_word = word
 
     # Removing very low or very high frequent words
@@ -43,8 +44,31 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
 
 def main():
     neg, neg_bi, pos, pos_bi = read_training_datasets()
-    print(neg_bi.get_probability_of_sentence(['is', 'working']))
-    print(pos_bi.get_probability_of_sentence(['is', 'working']))
+    try:
+        input_str = input('Choose one of models:\n\n1- Unigram model\n2- Bigram model\n')
+        is_unigram = input_str.startswith('1')
+
+        # Getting inputs loop
+        while True:
+            input_str = input('Enter an opinion: ')
+            input_list = [i for i in pre_process_filter(input_str)]
+
+            if is_unigram:
+                negative_probability = neg.get_probability_of('')
+                positive_probability = pos.get_probability_of('')
+            else:
+                negative_probability = neg_bi.get_probability_of_sentence(input_list)
+                positive_probability = pos_bi.get_probability_of_sentence(input_list)
+
+            print('negative probability: ', negative_probability)
+            print('positive probability: ', positive_probability)
+            if negative_probability > positive_probability:
+                print('filter this')
+            else:
+                print('not filter this')
+
+    except KeyboardInterrupt:
+        print('\nExiting due to a keyboard interrupt...', file=sys.stderr)
 
 
 if __name__ == '__main__':
