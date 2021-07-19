@@ -1,3 +1,6 @@
+from constants import Consts
+
+
 class UnigramModel:
     __dict: dict[str: int]
 
@@ -67,6 +70,7 @@ class UnigramModel:
 
 class BigramModel:
     __dict: dict[str: dict[str: int]]
+    __unigrams: UnigramModel
 
     def __init__(self, unigrams):
         self.__dict = {}
@@ -96,6 +100,9 @@ class BigramModel:
 
     def __repr__(self):
         return str(self)
+
+    def get_unigrams(self):
+        return self.__unigrams
 
     def word2_if_word1(self, word1, word2):
         if word1 not in self.__unigrams:
@@ -130,3 +137,15 @@ class BigramModel:
                 del self.__dict[max_word[0]][max_word[1]]
             if len(self.__dict.get(max_word[0], '1')) == 0:
                 del self.__dict[max_word[0]]
+
+    def get_probability_of_two(self, word1, word2):
+        p1 = Consts.LAMBDA_1 * self.word2_if_word1(word1, word2)
+        p2 = Consts.LAMBDA_2 * self.__unigrams.get_probability_of(word2)
+        p3 = Consts.LAMBDA_3 * Consts.EPSILON
+        return p1 + p2 + p3
+
+    def get_probability_of_sentence(self, sentence: list[str]):
+        mul = self.__unigrams.get_probability_of(sentence[0])
+        for i in range(1, len(sentence)):
+            mul *= self.get_probability_of_two(sentence[i-1], sentence[i])
+        return mul
