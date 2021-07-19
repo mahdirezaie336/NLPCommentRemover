@@ -1,4 +1,5 @@
 from constants import Consts
+from math import log
 
 
 class UnigramModel:
@@ -39,11 +40,6 @@ class UnigramModel:
         self[item] += 1
         self.__size += 1
 
-    def get_probability_of(self, word):
-        if self.__size == 0:
-            return 0.0
-        return self.__dict.get(word, 0) / self.__size
-
     def clean(self, min_number_of_repeats, top_n_maximums):
         to_remove = []
 
@@ -66,6 +62,25 @@ class UnigramModel:
             if max_word != '':
                 self.__size -= self.__dict[max_word]
                 del self.__dict[max_word]
+
+    def get_probability_of(self, word):
+        if self.__size == 0:
+            return 0.0
+        return self.__dict.get(word, 0) / self.__size
+
+    def get_estimated_probability_of(self, word):
+        p1 = Consts.LAMBDA_1_1 * self.get_probability_of(word)
+        p2 = Consts.LAMBDA_1_2 * Consts.EPSILON
+        return p1 + p2
+
+    def get_probability_of_sentence(self, sentence: list[str], use_logarithm=False):
+        mul = 1
+        for word in sentence:
+            if use_logarithm:
+                mul *= log(self.get_estimated_probability_of(word))
+            else:
+                mul *= self.get_estimated_probability_of(word)
+        return mul
 
 
 class BigramModel:

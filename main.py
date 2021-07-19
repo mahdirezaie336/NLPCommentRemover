@@ -54,8 +54,8 @@ def main():
             input_list = [i for i in pre_process_filter(input_str)]
 
             if is_unigram:
-                negative_probability = neg.get_probability_of('')
-                positive_probability = pos.get_probability_of('')
+                negative_probability = neg.get_probability_of_sentence(input_list)
+                positive_probability = pos.get_probability_of_sentence(input_list)
             else:
                 negative_probability = neg_bi.get_probability_of_sentence(input_list)
                 positive_probability = pos_bi.get_probability_of_sentence(input_list)
