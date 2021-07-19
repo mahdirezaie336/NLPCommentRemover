@@ -49,6 +49,7 @@ class UnigramModel:
             if self.__dict[word] <= min_number_of_repeats:
                 to_remove.append(word)
         for i in to_remove:
+            self.__size -= self.__dict[i]
             del self.__dict[i]
 
         # Remove top n repeated words
@@ -60,6 +61,7 @@ class UnigramModel:
                     maximum = self.__dict[word]
                     max_word = word
             if max_word != '':
+                self.__size -= self.__dict[max_word]
                 del self.__dict[max_word]
 
 
@@ -110,6 +112,7 @@ class BigramModel:
                     to_remove.append((first_word, second_word))
         for i in to_remove:
             del self.__dict[i[0]][i[1]]
+            self.__size -= 1
             if len(self.__dict[i[0]]) == 0:
                 del self.__dict[i[0]]
 
@@ -123,6 +126,7 @@ class BigramModel:
                         maximum = self.__dict[first_word][second_word]
                         max_word = (first_word, second_word)
             if max_word != ('', ''):
+                self.__size -= 1
                 del self.__dict[max_word[0]][max_word[1]]
             if len(self.__dict.get(max_word[0], '1')) == 0:
                 del self.__dict[max_word[0]]

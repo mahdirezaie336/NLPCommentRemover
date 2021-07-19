@@ -32,6 +32,11 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
                 pos_bi[word, prev_word] += 1
                 prev_word = word
 
+
+    print(neg)
+    print(neg.get_probability_of('working'))
+    print(len(neg))
+
     # Removing very low or very high frequent words
     pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
     neg.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
@@ -43,7 +48,9 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
 
 def main():
     neg, neg_bi, pos, pos_bi = read_training_datasets()
-    print(neg, neg_bi)
+    print(neg)
+    print(neg.get_probability_of('working'))
+    print(len(neg))
 
 
 if __name__ == '__main__':

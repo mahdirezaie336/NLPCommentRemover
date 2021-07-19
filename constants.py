@@ -1,6 +1,6 @@
 class Consts:
 
-    NEGATIVE_DATASET = './rt-polarity.neg'
+    NEGATIVE_DATASET = './my_neg'
     POSITIVE_DATASET = './rt-polarity.pos'
 
     LOWER_FREQUENCY_CUTOFF = 2
