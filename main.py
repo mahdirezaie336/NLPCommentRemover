@@ -34,10 +34,10 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
                 prev_word = word
 
     # Removing very low or very high frequent words
-    # pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
-    # neg.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
-    # pos_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
-    # neg_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    neg.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    pos_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
+    neg_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
 
     return neg, neg_bi, pos, pos_bi
 
@@ -53,19 +53,20 @@ def main():
             input_str = input('Enter an opinion: ')
             input_list = [i for i in pre_process_filter(input_str)]
 
+            use_logarithm = False
             if is_unigram:
-                negative_probability = neg.get_probability_of_sentence(input_list)
-                positive_probability = pos.get_probability_of_sentence(input_list)
+                negative_probability = neg.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
+                positive_probability = pos.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
             else:
-                negative_probability = neg_bi.get_probability_of_sentence(input_list)
-                positive_probability = pos_bi.get_probability_of_sentence(input_list)
+                negative_probability = neg_bi.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
+                positive_probability = pos_bi.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
 
             print('negative probability: ', negative_probability)
             print('positive probability: ', positive_probability)
             if negative_probability > positive_probability:
-                print('filter this')
+                print('\nfilter this\n')
             else:
-                print('not filter this')
+                print('\nnot filter this\n')
 
     except KeyboardInterrupt:
         print('\nExiting due to a keyboard interrupt...', file=sys.stderr)

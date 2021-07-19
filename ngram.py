@@ -159,8 +159,11 @@ class BigramModel:
         p3 = Consts.LAMBDA_3 * Consts.EPSILON
         return p1 + p2 + p3
 
-    def get_probability_of_sentence(self, sentence: list[str]):
+    def get_probability_of_sentence(self, sentence: list[str], use_logarithm=False):
         mul = self.__unigrams.get_probability_of(sentence[0])
         for i in range(1, len(sentence)):
-            mul *= self.get_probability_of_two(sentence[i-1], sentence[i])
+            if use_logarithm:
+                mul *= log(self.get_probability_of_two(sentence[i - 1], sentence[i]))
+            else:
+                mul *= self.get_probability_of_two(sentence[i - 1], sentence[i])
         return mul
