@@ -2,6 +2,7 @@ import re
 from ngram import *
 import sys
 import random
+import numpy as np
 
 
 def pre_process_filter(line: str) -> list[str]:
@@ -11,43 +12,30 @@ def pre_process_filter(line: str) -> list[str]:
 
 
 def read_training_datasets() -> (UnigramModel, BigramModel, list, UnigramModel, BigramModel, list):
-    neg = UnigramModel()
-    neg_bi = BigramModel(neg)
-    neg_test = []                                                       # List of test dataset
-    # Reading Negative Dataset
-    with open(Consts.NEGATIVE_DATASET, 'r') as file:
-        for line in file:
-            use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
-            sentence_list = []
-            prev_word = ''
-            for word in pre_process_filter(line):
-                if use_for_test:
-                    sentence_list.append(word)
-                else:
-                    neg[word] += 1
-                    neg_bi[prev_word, word] += 1
-                    prev_word = word
-            if use_for_test:
-                neg_test.append(sentence_list)
 
-    pos = UnigramModel()
-    pos_bi = BigramModel(neg)
-    pos_test = []                                                       # List of test dataset
-    # Reading Positive Dataset
-    with open(Consts.POSITIVE_DATASET, 'r') as file:
-        for line in file:
-            use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
-            sentence_list = []
-            prev_word = ''
-            for word in pre_process_filter(line):
+    def create_models(dataset_file_address) -> (UnigramModel, BigramModel, list[list[str]]):
+        uni = UnigramModel()
+        bi = BigramModel(uni)
+        test = []                                                       # List of test dataset
+        # Reading Negative Dataset
+        with open(dataset_file_address, 'r') as file:
+            for line in file:
+                use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
+                sentence_list = []
+                prev_word = ''
+                for word in pre_process_filter(line):
+                    if use_for_test:
+                        sentence_list.append(word)
+                    else:
+                        uni[word] += 1
+                        bi[prev_word, word] += 1
+                        prev_word = word
                 if use_for_test:
-                    sentence_list.append(word)
-                else:
-                    pos[word] += 1
-                    pos_bi[prev_word, word] += 1
-                    prev_word = word
-            if use_for_test:
-                pos_test.append(sentence_list)
+                    test.append(sentence_list)
+        return uni, bi, test
+
+    neg, neg_bi, neg_test = create_models(Consts.NEGATIVE_DATASET)
+    pos, pos_bi, pos_test = create_models(Consts.POSITIVE_DATASET)
 
     # Removing very low or very high frequent words
     pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
@@ -74,24 +62,24 @@ def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: Bi
     max_l1 = 0
     max_l2 = 0
     max_e = 0
-    NUMBER = 10
+    step = 0.1
 
     # Searching all possible values
-    for lambda1 in range(NUMBER):
-        for lambda2 in range(NUMBER):
-            for epsilon in range(1, NUMBER):
+    for lambda1 in np.arange(0, 1, step):
+        for lambda2 in np.arange(0, 1, step):
+            for epsilon in np.arange(0.1, 1, step):
                 # print(lambda1, lambda2, epsilon)
 
                 # Setting parameters
-                Consts.LAMBDA_1 = lambda1 / NUMBER
-                Consts.LAMBDA_2 = lambda2 / NUMBER
-                Consts.LAMBDA_3 = 1 - (Consts.LAMBDA_2 + Consts.LAMBDA_1)
-                Consts.EPSILON = epsilon / NUMBER
+                Consts.LAMBDA_1 = lambda1
+                Consts.LAMBDA_2 = lambda2
+                Consts.LAMBDA_3 = 1 - (lambda1 + lambda2)
+                Consts.EPSILON = epsilon
 
                 # Counting number of correct and wrong classifications
                 correct_count = 0
                 wrong_count = 0
-                if (lambda1 + lambda2)/NUMBER < 1:
+                if (lambda1 + lambda2) < 1:
                     for sentence in neg_test:
                         if neg_bi == find_class(neg_bi, pos_bi, sentence):
                             correct_count += 1
@@ -109,7 +97,7 @@ def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: Bi
                     max_l2 = lambda2
                     max_e = epsilon
 
-    return max_l1/NUMBER, max_l2/NUMBER, max_e, max_precision
+    return max_l1, max_l2, max_e, max_precision
 
 
 def main():
