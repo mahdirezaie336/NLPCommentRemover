@@ -55,7 +55,7 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
     pos_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
     neg_bi.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
 
-    return neg, neg_bi, pos, pos_bi
+    return neg, neg_bi, neg_test, pos, pos_bi, pos_test
 
 
 def main():
