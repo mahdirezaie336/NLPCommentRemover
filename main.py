@@ -20,18 +20,19 @@ def read_training_datasets() -> (UnigramModel, BigramModel, list, UnigramModel, 
         # Reading Negative Dataset
         with open(dataset_file_address, 'r') as file:
             for line in file:
-                use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
-                sentence_list = []
-                prev_word = ''
-                for word in pre_process_filter(line):
+                for part in re.split('[,.]', line):
+                    use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
+                    sentence_list = []
+                    prev_word = ''
+                    for word in pre_process_filter(part):
+                        if use_for_test:
+                            sentence_list.append(word)
+                        else:
+                            uni[word] += 1
+                            bi[prev_word, word] += 1
+                            prev_word = word
                     if use_for_test:
-                        sentence_list.append(word)
-                    else:
-                        uni[word] += 1
-                        bi[prev_word, word] += 1
-                        prev_word = word
-                if use_for_test:
-                    test.append(sentence_list)
+                        test.append(sentence_list)
         return uni, bi, test
 
     neg, neg_bi, neg_test = create_models(Consts.NEGATIVE_DATASET)
