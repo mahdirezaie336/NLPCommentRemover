@@ -13,15 +13,22 @@ def pre_process_filter(line: str) -> list[str]:
 def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, BigramModel):
     neg = UnigramModel()
     neg_bi = BigramModel(neg)
-    neg_test = []
+    neg_test = []                                                       # List of test dataset
     # Reading Negative Dataset
     with open(Consts.NEGATIVE_DATASET, 'r') as file:
         for line in file:
+            use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
+            sentence_list = []
             prev_word = ''
             for word in pre_process_filter(line):
-                neg[word] += 1
-                neg_bi[prev_word, word] += 1
-                prev_word = word
+                if use_for_test:
+                    sentence_list.append(word)
+                else:
+                    neg[word] += 1
+                    neg_bi[prev_word, word] += 1
+                    prev_word = word
+            if use_for_test:
+                neg_test.append(sentence_list)
 
     pos = UnigramModel()
     pos_bi = BigramModel(neg)
