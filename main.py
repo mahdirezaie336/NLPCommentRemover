@@ -32,15 +32,22 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
 
     pos = UnigramModel()
     pos_bi = BigramModel(neg)
-    pos_test = []
+    pos_test = []                                                       # List of test dataset
     # Reading Positive Dataset
     with open(Consts.POSITIVE_DATASET, 'r') as file:
         for line in file:
+            use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
+            sentence_list = []
             prev_word = ''
             for word in pre_process_filter(line):
-                pos[word] += 1
-                pos_bi[prev_word, word] += 1
-                prev_word = word
+                if use_for_test:
+                    sentence_list.append(word)
+                else:
+                    pos[word] += 1
+                    pos_bi[prev_word, word] += 1
+                    prev_word = word
+            if use_for_test:
+                pos_test.append(sentence_list)
 
     # Removing very low or very high frequent words
     pos.clean(Consts.LOWER_FREQUENCY_CUTOFF, Consts.UPPER_FREQUENCY_CUTOFF)
