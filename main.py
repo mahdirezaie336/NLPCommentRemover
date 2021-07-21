@@ -68,7 +68,7 @@ def find_class(neg, pos, sentence: list[str]):
 
 
 def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: BigramModel):
-
+    random.shuffle(neg_test)
     # Initializing parameters with 0
     max_precision = 0
     max_l1 = 0
@@ -80,7 +80,7 @@ def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: Bi
     for lambda1 in range(NUMBER):
         for lambda2 in range(NUMBER):
             for epsilon in range(1, NUMBER):
-                print(lambda1, lambda2, epsilon)
+                # print(lambda1, lambda2, epsilon)
 
                 # Setting parameters
                 Consts.LAMBDA_1 = lambda1 / NUMBER
@@ -100,7 +100,7 @@ def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: Bi
                 else:
                     # If sum of l1 and l2 is more than 1
                     wrong_count += 1
-                print(correct_count, wrong_count)
+                # print(correct_count, wrong_count)
                 # Finding maximum
                 precision = correct_count / (correct_count + wrong_count)
                 if precision > max_precision:
@@ -114,9 +114,8 @@ def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: Bi
 
 def main():
     neg, neg_bi, neg_test, pos, pos_bi, pos_test = read_training_datasets()
-    print('here')
     print(test_bigram_model(neg_bi, neg_test, pos_bi))
-    return
+    print(test_bigram_model(pos_bi, pos_test, neg_bi))
     try:
         input_str = input('Choose one of models:\n\n1- Unigram model\n2- Bigram model\n')
         is_unigram = input_str.startswith('1')
