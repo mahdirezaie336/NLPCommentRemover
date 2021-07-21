@@ -7,7 +7,10 @@ class Consts:
     # Bond limits
     LOWER_FREQUENCY_CUTOFF = 2
     UPPER_FREQUENCY_CUTOFF = 5
+
+    # Main settings
     TEST_SET_PERCENTAGE = 0.1
+    USE_LOGARITHM = True
 
     # Lambdas for bigram model
     EPSILON = 0.1

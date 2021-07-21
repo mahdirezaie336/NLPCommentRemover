@@ -59,7 +59,7 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
 
 
 def main():
-    neg, neg_bi, pos, pos_bi = read_training_datasets()
+    neg, neg_bi, neg_test, pos, pos_bi, pos_test = read_training_datasets()
     try:
         input_str = input('Choose one of models:\n\n1- Unigram model\n2- Bigram model\n')
         is_unigram = input_str.startswith('1')
@@ -72,7 +72,7 @@ def main():
             input_list = [i for i in pre_process_filter(input_str)]
 
             # Getting probability
-            use_logarithm = True
+            use_logarithm = Consts.USE_LOGARITHM
             if is_unigram:
                 negative_probability = neg.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
                 positive_probability = pos.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
