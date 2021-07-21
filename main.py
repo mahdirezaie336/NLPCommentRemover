@@ -1,7 +1,7 @@
 import re
-from constants import Consts
 from ngram import *
 import sys
+import random
 
 
 def pre_process_filter(line: str) -> list[str]:
@@ -13,6 +13,7 @@ def pre_process_filter(line: str) -> list[str]:
 def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, BigramModel):
     neg = UnigramModel()
     neg_bi = BigramModel(neg)
+    neg_test = []
     # Reading Negative Dataset
     with open(Consts.NEGATIVE_DATASET, 'r') as file:
         for line in file:
@@ -24,6 +25,7 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
 
     pos = UnigramModel()
     pos_bi = BigramModel(neg)
+    pos_test = []
     # Reading Positive Dataset
     with open(Consts.POSITIVE_DATASET, 'r') as file:
         for line in file:
@@ -56,7 +58,7 @@ def main():
             input_list = [i for i in pre_process_filter(input_str)]
 
             # Getting probability
-            use_logarithm = False
+            use_logarithm = True
             if is_unigram:
                 negative_probability = neg.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
                 positive_probability = pos.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)

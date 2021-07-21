@@ -161,9 +161,9 @@ class BigramModel:
 
     def get_probability_of_sentence(self, sentence: list[str], use_logarithm=False):
         if use_logarithm:
-            mul = log(self.__unigrams.get_probability_of(sentence[0]))
+            mul = log(self.__unigrams.get_estimated_probability_of(sentence[0]))
         else:
-            mul = self.__unigrams.get_probability_of(sentence[0])
+            mul = self.__unigrams.get_estimated_probability_of(sentence[0])
         for i in range(1, len(sentence)):
             if use_logarithm:
                 mul *= log(self.get_probability_of_two(sentence[i - 1], sentence[i]))
