@@ -10,7 +10,7 @@ def pre_process_filter(line: str) -> list[str]:
             yield word.lower()
 
 
-def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, BigramModel):
+def read_training_datasets() -> (UnigramModel, BigramModel, list, UnigramModel, BigramModel, list):
     neg = UnigramModel()
     neg_bi = BigramModel(neg)
     neg_test = []                                                       # List of test dataset
@@ -58,6 +58,16 @@ def read_training_datasets() -> (UnigramModel, BigramModel, UnigramModel, Bigram
     return neg, neg_bi, neg_test, pos, pos_bi, pos_test
 
 
+def find_class(neg, pos, sentence: list[str]):
+    # Getting probability
+    use_logarithm = Consts.USE_LOGARITHM
+    negative_probability = neg.get_probability_of_sentence(sentence, use_logarithm=use_logarithm)
+    positive_probability = pos.get_probability_of_sentence(sentence, use_logarithm=use_logarithm)
+    if negative_probability > positive_probability:
+        return neg
+    return pos
+
+
 def main():
     neg, neg_bi, neg_test, pos, pos_bi, pos_test = read_training_datasets()
     try:
@@ -71,14 +81,7 @@ def main():
                 break
             input_list = [i for i in pre_process_filter(input_str)]
 
-            # Getting probability
-            use_logarithm = Consts.USE_LOGARITHM
-            if is_unigram:
-                negative_probability = neg.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
-                positive_probability = pos.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
-            else:
-                negative_probability = neg_bi.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
-                positive_probability = pos_bi.get_probability_of_sentence(input_list, use_logarithm=use_logarithm)
+
 
             # Showing results
             print('negative probability: ', negative_probability)
