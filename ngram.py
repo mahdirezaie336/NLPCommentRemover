@@ -2,6 +2,10 @@ from constants import Consts
 from math import log
 
 
+def transform_probability(p: float):
+    return p * 10
+
+
 class UnigramModel:
     __dict: dict[str: int]
 
@@ -77,7 +81,7 @@ class UnigramModel:
         mul = 1
         for word in sentence:
             if use_logarithm:
-                mul *= log(self.get_estimated_probability_of(word))
+                mul *= transform_probability(self.get_estimated_probability_of(word))
             else:
                 mul *= self.get_estimated_probability_of(word)
         return mul
@@ -161,12 +165,12 @@ class BigramModel:
 
     def get_probability_of_sentence(self, sentence: list[str], use_logarithm=False):
         if use_logarithm:
-            mul = log(self.__unigrams.get_estimated_probability_of(sentence[0]))
+            mul = transform_probability(self.__unigrams.get_estimated_probability_of(sentence[0]))
         else:
             mul = self.__unigrams.get_estimated_probability_of(sentence[0])
         for i in range(1, len(sentence)):
             if use_logarithm:
-                mul *= log(self.get_probability_of_two(sentence[i - 1], sentence[i]))
+                mul *= transform_probability(self.get_probability_of_two(sentence[i - 1], sentence[i]))
             else:
                 mul *= self.get_probability_of_two(sentence[i - 1], sentence[i])
         return mul

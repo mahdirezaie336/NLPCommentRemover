@@ -21,4 +21,3 @@ class Consts:
     # Lambdas for unigram model
     LAMBDA_1_1 = 0.8
     LAMBDA_1_2 = 0.2
-
