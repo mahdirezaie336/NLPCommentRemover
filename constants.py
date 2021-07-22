@@ -19,5 +19,6 @@ class Consts:
     LAMBDA_3 = 0.1
 
     # Lambdas for unigram model
+    EPSILON_1 = 0.1
     LAMBDA_1_1 = 0.8
     LAMBDA_1_2 = 0.2

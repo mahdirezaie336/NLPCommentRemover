@@ -70,7 +70,7 @@ class UnigramModel:
 
     def get_estimated_probability_of(self, word):
         p1 = Consts.LAMBDA_1_1 * self.get_probability_of(word)
-        p2 = Consts.LAMBDA_1_2 * Consts.EPSILON
+        p2 = Consts.LAMBDA_1_2 * Consts.EPSILON_1
         return p1 + p2
 
     def get_probability_of_sentence(self, sentence: list[str], use_logarithm=False):

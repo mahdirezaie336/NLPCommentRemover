@@ -101,7 +101,7 @@ def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: Bi
     return max_l1, max_l2, max_e, max_precision
 
 
-def test_unigram(neg: UnigramModel, neg_test: list[list[str]], pos: UnigramModel):
+def test_unigram_model(neg: UnigramModel, neg_test: list[list[str]], pos: UnigramModel):
     random.shuffle(neg_test)
 
     # Initializing parameters with 0
@@ -146,18 +146,25 @@ def test_unigram(neg: UnigramModel, neg_test: list[list[str]], pos: UnigramModel
 
 
 def main():
-    neg, neg_bi, neg_test, pos, pos_bi, pos_test = read_training_datasets()
 
-    # Testing dataset and set parameters
-    l1, l2, e, _ = test_bigram_model(pos_bi, pos_test, neg_bi)
-    print('Found', l1, 'for LAMBDA 1 and', l2, 'for LAMBDA 2 and', e, 'for epsilon.')
-    Consts.LAMBDA_1 = l1
-    Consts.LAMBDA_2 = l2
-    Consts.LAMBDA_3 = 1 - l1 - l2
-    Consts.EPSILON = e
-
-    # Getting from user
     try:
+        neg, neg_bi, neg_test, pos, pos_bi, pos_test = read_training_datasets()
+
+        # Testing bigram dataset and set parameters
+        l1, l2, e, _ = test_bigram_model(pos_bi, pos_test, neg_bi)
+        print('Found', l1, 'for LAMBDA 1 and', l2, 'for LAMBDA 2 and', e, 'for epsilon.')
+        Consts.LAMBDA_1 = l1
+        Consts.LAMBDA_2 = l2
+        Consts.LAMBDA_3 = 1 - l1 - l2
+        Consts.EPSILON = e
+
+        # Testing unigram dataset and set parameters
+        l1, l2, e1, _ = test_unigram_model(pos, pos_test, neg)
+        Consts.LAMBDA_1 = l1
+        Consts.LAMBDA_2 = l2
+        Consts.EPSILON_1 = e1
+
+        # Getting from user
         input_str = input('Choose one of models:\n\n1- Unigram model\n2- Bigram model\n')
         is_unigram = input_str.startswith('1')
 
