@@ -150,33 +150,40 @@ def main():
     try:
         neg, neg_bi, neg_test, pos, pos_bi, pos_test = read_training_datasets()
 
-        # Testing bigram dataset and set parameters
-        l1, l2, e, _ = test_bigram_model(pos_bi, pos_test, neg_bi)
-        print('Found', l1, 'for LAMBDA 1 and', l2, 'for LAMBDA 2 and', e, 'for epsilon.')
-        Consts.LAMBDA_1 = l1
-        Consts.LAMBDA_2 = l2
-        Consts.LAMBDA_3 = 1 - l1 - l2
-        Consts.EPSILON = e
-
-        # Testing unigram dataset and set parameters
-        l1, l2, e1, _ = test_unigram_model(pos, pos_test, neg)
-        Consts.LAMBDA_1 = l1
-        Consts.LAMBDA_2 = l2
-        Consts.EPSILON_1 = e1
-
         # Getting from user
         input_str = input('Choose one of models:\n\n1- Unigram model\n2- Bigram model\n')
         is_unigram = input_str.startswith('1')
+
+        # Testing dataset to find parameters
+        if not is_unigram:
+            # Testing bigram dataset and set parameters
+            l1, l2, e, _ = test_bigram_model(pos_bi, pos_test, neg_bi)
+            print('Found', l1, 'for LAMBDA 1 and', l2, 'for LAMBDA 2 and', e, 'for epsilon.')
+            Consts.LAMBDA_1 = l1
+            Consts.LAMBDA_2 = l2
+            Consts.LAMBDA_3 = 1 - l1 - l2
+            Consts.EPSILON = e
+
+            neg_model = neg_bi
+            pos_model = pos_bi
+        else:
+            # Testing unigram dataset and set parameters
+            l1, l2, e1, _ = test_unigram_model(pos, pos_test, neg)
+            Consts.LAMBDA_1 = l1
+            Consts.LAMBDA_2 = l2
+            Consts.EPSILON_1 = e1
+
+            neg_model = neg
+            pos_model = pos
 
         # Getting inputs loop
         while True:
             input_str = input('Enter an opinion: ')
             if input_str == '!q':
                 break
+
             input_list = [i for i in pre_process_filter(input_str)]
-
-
-            if True:
+            if neg_model == find_class(neg_model, pos_model, input_list):
                 print('\nfilter this\n')
             else:
                 print('\nnot filter this\n')
