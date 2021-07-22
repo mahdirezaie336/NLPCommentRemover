@@ -155,9 +155,10 @@ def main():
         is_unigram = input_str.startswith('1')
 
         # Testing dataset to find parameters
+        print('Testing. Please wait ...')
         if not is_unigram:
             # Testing bigram dataset and set parameters
-            l1, l2, e, _ = test_bigram_model(pos_bi, pos_test, neg_bi)
+            l1, l2, e, p = test_bigram_model(pos_bi, pos_test, neg_bi)
             print('Found', l1, 'for LAMBDA 1 and', l2, 'for LAMBDA 2 and', e, 'for epsilon.')
             Consts.LAMBDA_1 = l1
             Consts.LAMBDA_2 = l2
@@ -168,13 +169,15 @@ def main():
             pos_model = pos_bi
         else:
             # Testing unigram dataset and set parameters
-            l1, l2, e1, _ = test_unigram_model(pos, pos_test, neg)
+            l1, l2, e1, p = test_unigram_model(pos, pos_test, neg)
+            print('Found', l1, 'for LAMBDA 1 and', l2, 'for LAMBDA 2 and', e1, 'for epsilon.')
             Consts.LAMBDA_1 = l1
             Consts.LAMBDA_2 = l2
             Consts.EPSILON_1 = e1
 
             neg_model = neg
             pos_model = pos
+        print('Precision is', p, '\n')
 
         # Getting inputs loop
         while True:
