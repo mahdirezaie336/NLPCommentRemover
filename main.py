@@ -20,7 +20,7 @@ def read_training_datasets() -> (UnigramModel, BigramModel, list, UnigramModel, 
         # Reading Negative Dataset
         with open(dataset_file_address, 'r') as file:
             for line in file:
-                for part in re.split('[,.]', line):
+                for part in re.split('[.]', line):
                     use_for_test = random.random() < Consts.TEST_SET_PERCENTAGE
                     sentence_list = []
                     prev_word = ''
@@ -31,7 +31,7 @@ def read_training_datasets() -> (UnigramModel, BigramModel, list, UnigramModel, 
                             uni[word] += 1
                             bi[prev_word, word] += 1
                             prev_word = word
-                    if use_for_test:
+                    if use_for_test and len(sentence_list) > 0:
                         test.append(sentence_list)
         return uni, bi, test
 
@@ -101,10 +101,62 @@ def test_bigram_model(neg_bi: BigramModel, neg_test: list[list[str]], pos_bi: Bi
     return max_l1, max_l2, max_e, max_precision
 
 
+def test_unigram(neg: UnigramModel, neg_test: list[list[str]], pos: UnigramModel):
+    random.shuffle(neg_test)
+
+    # Initializing parameters with 0
+    max_precision = 0
+    max_l1 = 0
+    max_l2 = 0
+    max_e = 0
+    step = 0.1
+
+    # Searching all possible values
+    for lambda1 in np.arange(0, 1, step):
+        for epsilon in np.arange(0.1, 1, step):
+            # print(lambda1, lambda2, epsilon)
+
+            # Setting parameters
+            Consts.LAMBDA_1_1 = lambda1
+            Consts.LAMBDA_1_2 = 1 - lambda1
+            Consts.EPSILON = epsilon
+
+            # Counting number of correct and wrong classifications
+            correct_count = 0
+            wrong_count = 0
+            for sentence in neg_test:
+                if neg == find_class(neg, pos, sentence):
+                    correct_count += 1
+                else:
+                    wrong_count += 1
+
+            # Calculating precision
+            if (correct_count + wrong_count) > 0:
+                precision = correct_count / (correct_count + wrong_count)
+            else:
+                precision = 0
+
+            if precision > max_precision:
+                max_precision = precision
+                max_l1 = lambda1
+                max_l2 = 1 - lambda1
+                max_e = epsilon
+
+    return max_l1, max_l2, max_e, max_precision
+
+
 def main():
     neg, neg_bi, neg_test, pos, pos_bi, pos_test = read_training_datasets()
-    print(test_bigram_model(neg_bi, neg_test, pos_bi))
-    print(test_bigram_model(pos_bi, pos_test, neg_bi))
+
+    # Testing dataset and set parameters
+    l1, l2, e, _ = test_bigram_model(pos_bi, pos_test, neg_bi)
+    print('Found', l1, 'for LAMBDA 1 and', l2, 'for LAMBDA 2 and', e, 'for epsilon.')
+    Consts.LAMBDA_1 = l1
+    Consts.LAMBDA_2 = l2
+    Consts.LAMBDA_3 = 1 - l1 - l2
+    Consts.EPSILON = e
+
+    # Getting from user
     try:
         input_str = input('Choose one of models:\n\n1- Unigram model\n2- Bigram model\n')
         is_unigram = input_str.startswith('1')
